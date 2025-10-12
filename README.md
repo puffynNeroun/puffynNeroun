@@ -42,6 +42,17 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 ---
 
+<!-- ACTIVITY:START -->
+_Last update: initializing..._
+<!-- ACTIVITY:END -->
+
+<!-- ACTIVITY:STATE
+DATE=
+COUNT=0
+TARGET=0
+ACTIVITY:STATE -->
+
+
 ### 🧭 About Me  
 I turn ideas into **production-ready, measurable results** — balancing **speed, structure, and developer experience**.  
 Currently exploring **RSC patterns, edge deployments, and AI-assisted DX tools**.
