@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-  <a href="https://komarev.com/ghpvc/?username=puffynNeroun?_=1760290029">
-    <img src="https://komarev.com/ghpvc/?username=puffynNeroun&color=5BCDEC&style=flat-square?_=1760290029" alt="profile views"/>
+  <a href="https://komarev.com/ghpvc/?username=puffynNeroun?_=1760290029?_=1760290653">
+    <img src="https://komarev.com/ghpvc/?username=puffynNeroun&color=5BCDEC&style=flat-square?_=1760290029?_=1760290653" alt="profile views"/>
   </a>
-  <img src="https://img.shields.io/github/followers/puffynNeroun?style=flat-square&color=5BCDEC?_=1760290029" alt="followers"/>
-  <img src="https://img.shields.io/github/stars/puffynNeroun?style=flat-square&color=5BCDEC?_=1760290029" alt="stars"/>
+  <img src="https://img.shields.io/github/followers/puffynNeroun?style=flat-square&color=5BCDEC?_=1760290029?_=1760290653" alt="followers"/>
+  <img src="https://img.shields.io/github/stars/puffynNeroun?style=flat-square&color=5BCDEC?_=1760290029?_=1760290653" alt="stars"/>
 </p>
 
 # 👋 Hi, I'm Aleksandr Teslia  
@@ -50,7 +50,7 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 <p align="center">
   <!-- streak (стабильный виджет) -->
-  <img height="165" src="https://github-readme-streak-stats.herokuapp.com?user=puffynNeroun&theme=github-dark&hide_border=true&ring=5BCDEC&fire=5BCDEC&currStreakLabel=5BCDEC?_=1760290029" />
+  <img height="165" src="https://github-readme-streak-stats.herokuapp.com?user=puffynNeroun&theme=github-dark&hide_border=true&ring=5BCDEC&fire=5BCDEC&currStreakLabel=5BCDEC?_=1760290029?_=1760290653" />
 </p>
 
 <!-- Activity Graph (fallback visual life) -->
@@ -68,7 +68,7 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 ### 🏆 GitHub Achievements
 <p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=puffynNeroun&theme=darkhub&no-frame=true&no-bg=true&margin-w=12&margin-h=12&column=6?_=1760290029"/>
+  <img src="https://github-profile-trophy.vercel.app/?username=puffynNeroun&theme=darkhub&no-frame=true&no-bg=true&margin-w=12&margin-h=12&column=6?_=1760290029?_=1760290653"/>
 </p>
 
 ---
