@@ -1,26 +1,36 @@
-# Автоматические метки по путям и файлам
-
+# Маппинг: <название-лейбла> -> массив правил
 feature:
-  - "src/**"
-  - "components/**"
-  - "pages/**"
-
-bug:
-  - "fix/**"
-  - "hotfix/**"
-
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/**'
+          - 'app/**'
+          - 'packages/**'
+fix:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.ts'
+          - '**/*.tsx'
+          - '**/*.js'
+          - 'src/**'
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'README.md'
+          - 'docs/**'
 chore:
-  - ".github/**"
-  - "scripts/**"
-  - "docs/**"
-  - "README.md"
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - '**/*.yml'
+          - '**/*.yaml'
 
 deps:
-  - "package.json"
-  - "yarn.lock"
-  - "pnpm-lock.yaml"
-  - "package-lock.json"
-
-refactor:
-  - "lib/**"
-  - "utils/**"
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'pnpm-lock.yaml'
+          - 'yarn.lock'
+actions:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
