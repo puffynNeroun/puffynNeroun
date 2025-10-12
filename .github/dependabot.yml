@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # npm в корне (теперь package.json есть)
+  # npm в корне
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
