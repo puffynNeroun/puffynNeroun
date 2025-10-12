@@ -34,7 +34,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           TODAY="$(date -u +%Y-%m-%d)"
           TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
           HOUR=$(date -u +%H)
@@ -60,20 +59,22 @@ jobs:
             exit 0
           fi
 
+          # Вставляем стартовый блок, если его нет
           if ! grep -q "<!-- ACTIVITY:STATE" README.md; then
-            cat >> README.md <<'EOF'
-
-<!-- ACTIVITY:START -->
-_Last update: initializing..._
-<!-- ACTIVITY:END -->
-
-<!-- ACTIVITY:STATE
-DATE=
-COUNT=0
-TARGET=0
-ACTIVITY:STATE -->
-EOF
+            {
+              echo
+              echo "<!-- ACTIVITY:START -->"
+              echo "_Last update: initializing..._"
+              echo "<!-- ACTIVITY:END -->"
+              echo
+              echo "<!-- ACTIVITY:STATE"
+              echo "DATE="
+              echo "COUNT=0"
+              echo "TARGET=0"
+              echo "ACTIVITY:STATE -->"
+            } >> README.md
           fi
+
 
           START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
           END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
