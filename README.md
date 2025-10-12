@@ -2,7 +2,7 @@
 **Full-stack Developer** — React / Next.js / Node / Nest  
 
 I build fast, scalable web apps using **Next.js 15 (RSC, Server Actions)**, **TypeScript**, and **Prisma/PostgreSQL**.  
-Focused on **performance, clean architecture, DX, and automation**.
+Focused on **performance, clean architecture, DX, and automation.**
 
 - **Current focus:** RSC, Server Actions, TanStack Query v5  
 - **Side projects:** [Dota Helper AI](https://github.com/puffynNeroun/dota--helper) · [Sushi E-commerce](https://github.com/puffynNeroun/sushi-store)  
@@ -29,10 +29,16 @@ Focused on **performance, clean architecture, DX, and automation**.
 ### 📈 GitHub Insights  
 
 <div align="center">
-  
-![Stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_border=true&count_private=true&include_all_commits=true&rank_icon=github&custom_title=Aleksandr%27s%20GitHub%20Stats)  
-![Streak](https://streak-stats.demolab.com?user=puffynNeroun&theme=github-dark&hide_border=true&date_format=%5BY%20%5DM%20j)  
-![Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=puffynNeroun&layout=compact&theme=github_dark&hide_border=true&langs_count=8)
+
+<!-- Primary Stats -->
+<img height="170em" src="https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_border=true&count_private=true&include_all_commits=true&custom_title=Aleksandr's%20GitHub%20Activity&line_height=26&rank_icon=github&card_width=500" />
+<img height="170em" src="https://github-readme-streak-stats.herokuapp.com?user=puffynNeroun&theme=github-dark&hide_border=true&ring=5BCDEC&fire=5BCDEC&currStreakLabel=5BCDEC" />
+
+<!-- Language Card -->
+<img height="165em" src="https://github-readme-stats.vercel.app/api/top-langs/?username=puffynNeroun&layout=compact&theme=github_dark&hide_border=true&langs_count=10&card_width=500" />
+
+<!-- Activity Graph (fallback visual life) -->
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=puffynNeroun&theme=github-dark&hide_border=true&bg_color=0D1117&color=5BCDEC&line=5BCDEC&point=5BCDEC" />
 
 </div>
 
