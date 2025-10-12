@@ -16,69 +16,133 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - id: run
+      # Определяем основную ветку (main/master) динамически
+      - name: Detect default branch
+        id: def
         shell: bash
         run: |
           set -euo pipefail
+          DEF=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' || true)
+          echo "branch=${DEF:-master}" >> "$GITHUB_OUTPUT"
+
+      - name: Decide and update
+        id: run
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # --- Глобальные данные времени ---
           TODAY="$(date -u +%Y-%m-%d)"
           TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
-          HOUR=$(date -u +%H)
+          HOUR=$(date -u +%H)     # 00..23
+          DOW=$(date -u +%u)      # 1..7 (понедельник..воскресенье)
 
-          # Разрешаем обновления только днём (05–22 UTC ~ 08–01 IL)
-          if (( HOUR < 5 || HOUR > 22 )); then
-            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
+          # --- Fail-safe: наличие README ---
+          if [[ ! -f README.md ]]; then
+            echo "README.md missing — nothing to do."
+            echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          # --- Дневное окно активности (реалистичнее) ---
+          if (( HOUR < 5 || HOUR > 22 )); then
+            echo "Night hours — skip."
+            echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # --- Минимальный интервал между апдейтами (10 минут) ---
+          LAST_TS=$(git log -1 --pretty=%ct -- README.md 2>/dev/null || echo 0)
+          NOW_TS=$(date -u +%s)
+          if (( NOW_TS - LAST_TS < 600 )); then
+            echo "Updated <10 min ago — skip."
+            echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # --- Инициализация блока состояния, если его нет ---
+          if ! grep -q "<!-- ACTIVITY:STATE" README.md; then
+            cat >> README.md <<'EOF'
+
+<!-- ACTIVITY:START -->
+_Last update: initializing..._
+<!-- ACTIVITY:END -->
+
+<!-- ACTIVITY:STATE
+DATE=
+COUNT=0
+TARGET=0
+ACTIVITY:STATE -->
+EOF
+          fi
+
+          # --- Чтение состояния ---
           START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
           END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
-          if [[ -z "${START_LINE}" || -z "${END_LINE}" ]]; then
-            echo "STATE block not found. Abort."; exit 1
-          fi
 
           STATE=$(sed -n "$((START_LINE+1)),$((END_LINE-1))p" README.md)
           DATE=$(echo "$STATE"  | grep '^DATE='   | cut -d= -f2- || true)
           COUNT=$(echo "$STATE" | grep '^COUNT='  | cut -d= -f2- || true)
           TARGET=$(echo "$STATE"| grep '^TARGET=' | cut -d= -f2- || true)
-          COUNT=${COUNT:-0}; TARGET=${TARGET:-0}
 
-          # Новый день → цель 5–20 с перекосом к 6–12
+          COUNT=${COUNT:-0}
+          TARGET=${TARGET:-0}
+
+          # --- Новый день → цель 5–20 с перекосом к 6–12; на выходных чуть меньше ---
           if [[ "$DATE" != "$TODAY" ]]; then
-            # распределение: 5–8 (35%), 9–12 (35%), 13–16 (20%), 17–20 (10%)
             R=$((RANDOM%100))
-            if   (( R < 35 )); then TARGET=$((5 + RANDOM%4))     # 5–8
-            elif (( R < 70 )); then TARGET=$((9 + RANDOM%4))     # 9–12
-            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))    # 13–16
-            else                   TARGET=$((17 + RANDOM%4))     # 17–20
+            if   (( R < 35 )); then TARGET=$((5  + RANDOM%4))   # 5–8
+            elif (( R < 70 )); then TARGET=$((9  + RANDOM%4))   # 9–12
+            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))   # 13–16
+            else                   TARGET=$((17 + RANDOM%4))   # 17–20
             fi
-            COUNT=0; DATE="$TODAY"; NEW_DAY="yes"
+            # Выходные (суббота=6, воскресенье=7) — уменьшаем цель на 2–4
+            if (( DOW == 6 || DOW == 7 )); then
+              TARGET=$(( TARGET - (2 + RANDOM%3) ))
+            fi
+            (( TARGET < 3 )) && TARGET=3
+            COUNT=0
+            DATE="$TODAY"
+            NEW_DAY="yes"
           else
             NEW_DAY="no"
           fi
 
-          # Уже достигли цели — выходим
+          # --- Уже достигли цели ---
           if (( COUNT >= TARGET )); then
-            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
+            echo "Daily target reached ($COUNT/$TARGET)."
+            echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          # Вероятность апдейта сейчас (чтобы растягивать по дню):
-          # чем дальше от цели, тем выше шанс
+          # --- Вероятность апдейта: растягиваем по дню, финишный спринт вечером ---
           GAP=$((TARGET-COUNT))
-          BASE=$(( 30 + (GAP*5) ))      # 30% + 5% за каждый недостающий апдейт
+          BASE=$(( 30 + GAP*5 ))   # базовая вероятность: 30% + 5% за каждый недостающий апдейт
           (( BASE > 85 )) && BASE=85
+          # Если уже поздний вечер и отставание ощутимое — подталкиваем
+          if (( HOUR >= 21 && GAP > 2 )); then BASE=$((BASE+20)); fi
+          (( BASE > 90 )) && BASE=90
+
           CHANCE=$((RANDOM%100))
           if (( CHANCE >= BASE )) && [[ "$NEW_DAY" == "no" ]]; then
-            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
+            echo "Random gate closed (chance=${CHANCE}>=${BASE}) — skip."
+            echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
-          topics=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema"
-                  "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
-          pick=${topics[$RANDOM % ${#topics[@]}]}
-          SNIPPET="Last update: **$TS** · Focus today: *$pick*."
+          # --- Текстовые варианты, чтобы лента не была однотипной ---
+          prefixes=("Last update" "Daily checkpoint" "Routine sync" "Status ping" "Heartbeat" "Activity tick")
+          focus=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema" "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
+          pref=${prefixes[$RANDOM % ${#prefixes[@]}]}
+          pick=${focus[$RANDOM % ${#focus[@]}]}
+          SNIPPET="${pref}: **${TS}** · Focus today: *${pick}*."
 
-          # Вставка видимого сниппета
+          # --- Вставка видимой строки между START/END ---
           awk -v repl="$SNIPPET" '
             BEGIN{inblk=0}
             /<!-- ACTIVITY:START -->/ {print; print repl; inblk=1; next}
@@ -86,7 +150,7 @@ jobs:
             !inblk {print}
           ' README.md > README.tmp && mv README.tmp README.md
 
-          # Обновление STATE
+          # --- Обновление STATE ---
           COUNT=$((COUNT+1))
           awk -v date="$DATE" -v count="$COUNT" -v target="$TARGET" '
             BEGIN{inblk=0}
@@ -95,15 +159,16 @@ jobs:
             !inblk {print}
           ' README.md > README.tmp && mv README.tmp README.md
 
-          echo "NothingToDo=false" >> $GITHUB_OUTPUT
+          echo "NothingToDo=false" >> "$GITHUB_OUTPUT"
 
       - name: Rebase onto remote
         if: steps.run.outputs.NothingToDo == 'false'
         run: |
+          set -euo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin master
-          git rebase origin/master || git reset --hard origin/master
+          git fetch origin ${{ steps.def.outputs.branch }}
+          git rebase origin/${{ steps.def.outputs.branch }} || git reset --hard origin/${{ steps.def.outputs.branch }}
 
       - name: Commit changes
         if: steps.run.outputs.NothingToDo == 'false'
