@@ -46,6 +46,8 @@ Focused on **performance, clean architecture, DX, and automation.**
   <img src="./github-metrics.svg" alt="GitHub metrics" />
 </p>
 
+![GitHub Snake Light](https://raw.githubusercontent.com/puffynNeroun/puffynNeroun/output/github-contribution-grid-snake.svg#gh-light-mode-only)
+![GitHub Snake Dark](https://raw.githubusercontent.com/puffynNeroun/puffynNeroun/output/github-contribution-grid-snake-dark.svg#gh-dark-mode-only)
 
 
 <p align="center">
