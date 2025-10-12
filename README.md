@@ -5,7 +5,7 @@ I build fast, scalable web apps using **Next.js 15 (RSC, Server Actions)**, **Ty
 Focused on performance, clean architecture, and automation.  
 
 - 🚀 **Current focus:** RSC, Server Actions, and TanStack Query v5  
-- 🧩 **Side projects:** [Dota Helper AI]([https://github.com/puffynNeroun/dota-helper-ai](https://github.com/puffynNeroun/dota--helper)) · [Sushi E-commerce](https://github.com/puffynNeroun/sushi-store)  
+- 🧩 **Side projects:** [Dota Helper AI](https://github.com/puffynNeroun/dota--helper) · [Sushi E-commerce](https://github.com/puffynNeroun/sushi-store)  
 - 🧠 **Stack:** React, Next.js, Node/Nest, Prisma, Supabase, Tailwind, shadcn/ui, Docker, Vercel/AWS  
 - 💬 **Ask me about:** performance optimization, CI/CD, server-rendering patterns  
 - 📫 **Contacts:** [Telegram](https://t.me/lilerrpamp) · [GitHub](https://github.com/puffynNeroun) · [Email](mailto:rememberfox00@gmail.com)
