@@ -54,8 +54,8 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 ### 🚀 Recent Projects
 - **Dota Helper AI** — Next.js 15, Server Actions, Prisma/PostgreSQL, Redis. _Real-time picks, p95 ~180ms._ → [Code](https://github.com/puffynNeroun/dota--helper)
-- **Sushi E-commerce** — React+Vite, Node/Express, Supabase, SBIS payments. _Checkout completion ↑._ → [Code](https://github.com/puffynNeroun/sushi-store)
-- **Admin Panel** — Next.js 15, Server Actions CRUD, NextAuth, Redis, Playwright e2e. _Bundle −35% via route-level split._ → [Code](#)
+- **Sushi E-commerce** — React+Vite, Node/Express, Supabase, SBIS payments. _Checkout completion ↑._ → [Code](https://github.com/puffynNeroun/delivery-back)
+- **Admin Panel** — Next.js 15, Server Actions CRUD, NextAuth, Redis, Playwright e2e. _Bundle −35% via route-level split._ → [Code](https://github.com/puffynNeroun/resume-assistant)
 
 ---
 
