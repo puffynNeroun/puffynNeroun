@@ -2,11 +2,16 @@ name: Update README (variable times per day)
 
 on:
   schedule:
-    - cron: "7 * * * *"   # каждые ~час (в :07). Частота триггера — почасовая
-  workflow_dispatch:       # возможность запустить вручную
+    - cron: "7 * * * *"   # раз в час
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+# NEW: отменяем параллельные запуски этого workflow
+concurrency:
+  group: readme-auto-update
+  cancel-in-progress: true
 
 jobs:
   update:
@@ -14,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # NEW: нужен полный граф для rebase
 
       - name: Decide and update
         id: run
@@ -23,10 +30,8 @@ jobs:
           TODAY="$(date -u +%Y-%m-%d)"
           TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
 
-          # вытащим блок STATE
-          START_LINE=$(grep -n '<!-- ACTIVITY:STATE' -n README.md | cut -d: -f1)
-          END_LINE=$(grep -n 'ACTIVITY:STATE -->' -n README.md | cut -d: -f1)
-
+          START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
+          END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
           if [[ -z "${START_LINE}" || -z "${END_LINE}" ]]; then
             echo "STATE block not found. Abort."
             exit 1
@@ -36,16 +41,14 @@ jobs:
           DATE=$(echo "$STATE"  | grep '^DATE='   | cut -d= -f2- || true)
           COUNT=$(echo "$STATE" | grep '^COUNT='  | cut -d= -f2- || true)
           TARGET=$(echo "$STATE"| grep '^TARGET=' | cut -d= -f2- || true)
+          COUNT=${COUNT:-0}; TARGET=${TARGET:-0}
 
-          COUNT=${COUNT:-0}
-          TARGET=${TARGET:-0}
-
-          # если новый день — сбрасываем счётчик и выбираем новую цель (1/2/5)
+          # Новый день → выбираем цель 1/2/5
           if [[ "$DATE" != "$TODAY" ]]; then
             RAND=$((RANDOM%100))
-            if   (( RAND < 60 )); then TARGET=1  # 60%
-            elif (( RAND < 90 )); then TARGET=2  # 30%
-            else TARGET=5                        # 10%
+            if   (( RAND < 60 )); then TARGET=1
+            elif (( RAND < 90 )); then TARGET=2
+            else TARGET=5
             fi
             COUNT=0
             DATE="$TODAY"
@@ -54,32 +57,32 @@ jobs:
             NEW_DAY="no"
           fi
 
-          # если уже достигли дневной цели — ничего не делаем
+          # Уже достигли цели? Ничего не делаем
           if (( COUNT >= TARGET )); then
             echo "NothingToDo=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # случайно решаем, обновляться сейчас или подождать следующего часа
-          # (даёт естественное распределение в течение дня)
+          # Вероятностное решение — обновляться сейчас или позже
           CHANCE=$((RANDOM%100))
-          if   (( TARGET==1 && CHANCE<35 )); then SHOULD_UPDATE="yes"
-          elif (( TARGET==2 && CHANCE<45 )); then SHOULD_UPDATE="yes"
-          elif (( TARGET==5 && CHANCE<70 )); then SHOULD_UPDATE="yes"
-          else SHOULD_UPDATE="no"
+          if   (( TARGET==1 && CHANCE<35 )) || \
+               (( TARGET==2 && CHANCE<45 )) || \
+               (( TARGET==5 && CHANCE<70 )); then
+            SHOULD_UPDATE="yes"
+          else
+            SHOULD_UPDATE="no"
           fi
-
           if [[ "$SHOULD_UPDATE" != "yes" && "$NEW_DAY" == "no" ]]; then
             echo "NothingToDo=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          # готовим видимый сниппет
-          topics=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema" "Playwright e2e" "Core Web Vitals" "CI/CD")
+          # Видимый сниппет
+          topics=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema" "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
           pick=${topics[$RANDOM % ${#topics[@]}]}
           SNIPPET="Last update: **$TS** · Focus today: *$pick*."
 
-          # вставляем сниппет между ACTIVITY:START/END
+          # Вставка сниппета
           awk -v repl="$SNIPPET" '
             BEGIN{inblk=0}
             /<!-- ACTIVITY:START -->/ {print; print repl; inblk=1; next}
@@ -87,7 +90,7 @@ jobs:
             !inblk {print}
           ' README.md > README.tmp && mv README.tmp README.md
 
-          # увеличиваем счётчик и обновляем STATE
+          # Обновление STATE
           COUNT=$((COUNT+1))
           awk -v date="$DATE" -v count="$COUNT" -v target="$TARGET" '
             BEGIN{inblk=0}
@@ -98,11 +101,22 @@ jobs:
 
           echo "NothingToDo=false" >> $GITHUB_OUTPUT
 
+      # NEW: перед пушем ребейзим на удалённую ветку
+      - name: Rebase onto remote
+        if: steps.run.outputs.NothingToDo == 'false'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin master
+          git rebase origin/master || git reset --hard origin/master
+
       - name: Commit changes
         if: steps.run.outputs.NothingToDo == 'false'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "chore(readme): daily refresh"
+          commit_message: "chore(readme): auto refresh"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
           file_pattern: README.md
+          # NEW: на случай гонок — безопасный форс-пуш
+          push_options: '--force-with-lease'
