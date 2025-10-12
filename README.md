@@ -42,7 +42,6 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 ### 📈 GitHub Insights
 
-![Aleksandr's GitHub stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_title=true&count_private=true&hide_border=true)
 
 <p align="center">
   <!-- streak (стабильный виджет) -->
