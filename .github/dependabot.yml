@@ -1,25 +1,23 @@
 version: 2
-
 updates:
-  # 1) Обновления npm (корень репозитория)
+  # npm в корне (теперь package.json есть)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"     # раз в неделю (стабильно)
+      interval: "weekly"
       day: "monday"
       time: "07:00"
       timezone: "UTC"
     open-pull-requests-limit: 5
     assignees: ["puffynNeroun"]
     labels: ["deps", "automated"]
-    # группируем мелкие патчи, чтобы не плодить PR
     groups:
       minor-and-patch:
         patterns: ["*"]
         update-types: ["minor", "patch"]
 
-  # 2) Обновления GitHub Actions
-- package-ecosystem: "github-actions"
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
