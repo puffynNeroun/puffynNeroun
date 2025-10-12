@@ -1,14 +1,14 @@
 # 👋 Hi, I'm Aleksandr Teslia  
-**Full-stack Developer** · React / Next.js / Node / Nest  
+**Full-stack Developer** — React / Next.js / Node / Nest  
 
 I build fast, scalable web apps using **Next.js 15 (RSC, Server Actions)**, **TypeScript**, and **Prisma/PostgreSQL**.  
-Focused on performance, clean architecture, and automation.  
+Focused on **performance, clean architecture, DX, and automation**.
 
-- 🚀 **Current focus:** RSC, Server Actions, and TanStack Query v5  
-- 🧩 **Side projects:** [Dota Helper AI](https://github.com/puffynNeroun/dota--helper) · [Sushi E-commerce](https://github.com/puffynNeroun/sushi-store)  
-- 🧠 **Stack:** React, Next.js, Node/Nest, Prisma, Supabase, Tailwind, shadcn/ui, Docker, Vercel/AWS  
-- 💬 **Ask me about:** performance optimization, CI/CD, server-rendering patterns  
-- 📫 **Contacts:** [Telegram](https://t.me/lilerrpamp) · [GitHub](https://github.com/puffynNeroun) · [Email](mailto:rememberfox00@gmail.com)
+- **Current focus:** RSC, Server Actions, TanStack Query v5  
+- **Side projects:** [Dota Helper AI](https://github.com/puffynNeroun/dota--helper) · [Sushi E-commerce](https://github.com/puffynNeroun/sushi-store)  
+- **Stack:** React 19, Next.js 15, Node/Nest, Prisma, Supabase, Tailwind, shadcn/ui, Docker, Vercel/AWS  
+- **Ask me about:** performance optimization, CI/CD, SSR patterns, clean code  
+- **Contacts:** [Telegram](https://t.me/lilerrpamp) · [GitHub](https://github.com/puffynNeroun) · [Email](mailto:rememberfox00@gmail.com)
 
 ---
 
@@ -26,12 +26,18 @@ Focused on performance, clean architecture, and automation.
 
 ---
 
-### 📊 GitHub Stats
-![Aleksandr's GitHub stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=false&theme=github_dark&hide_title=false&count_private=false&hide_border=true)
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=puffynNeroun&layout=compact&theme=github_dark&hide_border=true)
+### 📈 GitHub Insights  
+
+<div align="center">
+  
+![Stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_border=true&count_private=true&include_all_commits=true&rank_icon=github&custom_title=Aleksandr%27s%20GitHub%20Stats)  
+![Streak](https://streak-stats.demolab.com?user=puffynNeroun&theme=github-dark&hide_border=true&date_format=%5BY%20%5DM%20j)  
+![Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=puffynNeroun&layout=compact&theme=github_dark&hide_border=true&langs_count=8)
+
+</div>
 
 ---
 
-### 🧭 About Me
-I enjoy turning ideas into **production-ready, measurable results.**  
-Building systems that balance **speed, structure, and developer experience**.
+### 🧭 About Me  
+I turn ideas into **production-ready, measurable results** — balancing **speed, structure, and developer experience**.  
+Currently exploring **RSC patterns, edge deployments, and AI-assisted DX tools**.
