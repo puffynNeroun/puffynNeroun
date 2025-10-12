@@ -2,7 +2,7 @@ name: Generate GitHub Metrics
 
 on:
   schedule:
-    - cron: '0 */12 * * *'   # каждые 12 часов
+    - cron: '0 */12 * * *'   # обновление каждые 12 часов
   workflow_dispatch:
 
 permissions:
@@ -17,41 +17,38 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           user: puffynNeroun
 
-          # Базовая структура
+          # === Основные параметры ===
           template: classic
-          base: header, activity, repositories, metadata
+          base: header, activity, community, repositories, metadata
           config_timezone: UTC
           filename: github-metrics.svg
           config_display: large
+          config_order: base.header, base.repositories, base.activity, base.community, base.metadata
 
-          # === Языки ===
+          # === Ачивки (исправлено и безопасно) ===
+          plugin_achievements: yes
+          plugin_achievements_threshold: C          # Порог — скрывает слабые/нулевые
+          plugin_achievements_display: detailed
+          plugin_achievements_secrets: yes          # Скрывает значения без данных
+          plugin_achievements_limit: 6              # Показывать только топ-6 ачивок
+          plugin_achievements_only: public          # Только публичные
+
+          # === Дополнительные модули (повышают "живость") ===
           plugin_languages: yes
           plugin_languages_ignored: html, css, scss
           plugin_languages_limit: 5
-          plugin_languages_analysis_timeout: 25
+          plugin_languages_analysis_timeout: 30
 
-          # === Активность ===
-          plugin_activity: yes
-          plugin_activity_limit: 4
-          plugin_activity_timestamps: yes
-          plugin_activity_skipped: yes
+          plugin_followup: yes
+          plugin_stargazers: yes
+          plugin_notable: yes
 
-          # === Репозитории ===
-          plugin_repositories: yes
-          plugin_repositories_affiliations: owner
+          # === Убираем лишнее и мелкие нули ===
           plugin_repositories_forks: no
-
-          # === Убрано всё лишнее ===
-          plugin_achievements: no
-          plugin_followup: no
-          plugin_notable: no
-          plugin_stargazers: no
-          plugin_habits: no
-          plugin_isocalendar: no
+          plugin_repositories_affiliations: owner
           plugin_lines: no
-          plugin_traffic: no
-          plugin_discussions: no
-          plugin_people: no
+          plugin_isocalendar: no
 
+          # === Коммит настроек ===
           committer_branch: master
-          committer_message: "chore(metrics): minimal metrics update"
+          committer_message: "chore(metrics): update github-metrics.svg"
