@@ -1,28 +1,24 @@
-# .github/labeler.yml  — простой и совместимый формат
+# Конфигурация для actions/labeler@v5
 feature:
-  - 'src/**'
-  - 'app/**'
-  - 'packages/**'
+  - changed-files:
+      - any-glob-to-any-file: ["src/**", "app/**", "packages/**"]
 
 fix:
-  - '**/*.ts'
-  - '**/*.tsx'
-  - '**/*.js'
-  - 'src/**'
+  - changed-files:
+      - any-glob-to-any-file: ["**/*.ts", "**/*.tsx", "**/*.js", "src/**"]
 
 docs:
-  - 'README.md'
-  - 'docs/**'
+  - changed-files:
+      - any-glob-to-any-file: ["README.md", "docs/**"]
 
 chore:
-  - '.github/**'
-  - '**/*.yml'
-  - '**/*.yaml'
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "**/*.yml", "**/*.yaml"]
 
 deps:
-  - 'package.json'
-  - 'pnpm-lock.yaml'
-  - 'yarn.lock'
+  - changed-files:
+      - any-glob-to-any-file: ["package.json", "yarn.lock", "pnpm-lock.yaml"]
 
 actions:
-  - '.github/workflows/**'
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**"]
