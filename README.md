@@ -53,6 +53,8 @@ Focused on **performance, clean architecture, DX, and automation.**
   <img height="165" src="https://github-readme-streak-stats.herokuapp.com?user=puffynNeroun&theme=github-dark&hide_border=true&ring=5BCDEC&fire=5BCDEC&currStreakLabel=5BCDEC" />
 </p>
 
+<!-- Activity Graph (fallback visual life) -->
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=puffynNeroun&theme=github-dark&hide_border=true&bg_color=0D1117&color=5BCDEC&line=5BCDEC&point=5BCDEC" />
 
 
 ---
