@@ -1,14 +1,13 @@
-name: Update README (variable times per day)
+name: Update README (variable 5–20 per day)
 
 on:
   schedule:
-    - cron: "7 * * * *"   # раз в час
+    - cron: "*/15 * * * *"   # каждые 15 минут
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# NEW: отменяем параллельные запуски этого workflow
 concurrency:
   group: readme-auto-update
   cancel-in-progress: true
@@ -17,24 +16,26 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0   # NEW: нужен полный граф для rebase
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
 
-      - name: Decide and update
-        id: run
+      - id: run
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(date -u +%Y-%m-%d)"
           TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
+          HOUR=$(date -u +%H)
+
+          # Разрешаем обновления только днём (05–22 UTC ~ 08–01 IL)
+          if (( HOUR < 5 || HOUR > 22 )); then
+            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
+          fi
 
           START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
           END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
           if [[ -z "${START_LINE}" || -z "${END_LINE}" ]]; then
-            echo "STATE block not found. Abort."
-            exit 1
+            echo "STATE block not found. Abort."; exit 1
           fi
 
           STATE=$(sed -n "$((START_LINE+1)),$((END_LINE-1))p" README.md)
@@ -43,46 +44,41 @@ jobs:
           TARGET=$(echo "$STATE"| grep '^TARGET=' | cut -d= -f2- || true)
           COUNT=${COUNT:-0}; TARGET=${TARGET:-0}
 
-          # Новый день → выбираем цель 1/2/5
+          # Новый день → цель 5–20 с перекосом к 6–12
           if [[ "$DATE" != "$TODAY" ]]; then
-            RAND=$((RANDOM%100))
-            if   (( RAND < 60 )); then TARGET=1
-            elif (( RAND < 90 )); then TARGET=2
-            else TARGET=5
+            # распределение: 5–8 (35%), 9–12 (35%), 13–16 (20%), 17–20 (10%)
+            R=$((RANDOM%100))
+            if   (( R < 35 )); then TARGET=$((5 + RANDOM%4))     # 5–8
+            elif (( R < 70 )); then TARGET=$((9 + RANDOM%4))     # 9–12
+            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))    # 13–16
+            else                   TARGET=$((17 + RANDOM%4))     # 17–20
             fi
-            COUNT=0
-            DATE="$TODAY"
-            NEW_DAY="yes"
+            COUNT=0; DATE="$TODAY"; NEW_DAY="yes"
           else
             NEW_DAY="no"
           fi
 
-          # Уже достигли цели? Ничего не делаем
+          # Уже достигли цели — выходим
           if (( COUNT >= TARGET )); then
-            echo "NothingToDo=true" >> $GITHUB_OUTPUT
-            exit 0
+            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
           fi
 
-          # Вероятностное решение — обновляться сейчас или позже
+          # Вероятность апдейта сейчас (чтобы растягивать по дню):
+          # чем дальше от цели, тем выше шанс
+          GAP=$((TARGET-COUNT))
+          BASE=$(( 30 + (GAP*5) ))      # 30% + 5% за каждый недостающий апдейт
+          (( BASE > 85 )) && BASE=85
           CHANCE=$((RANDOM%100))
-          if   (( TARGET==1 && CHANCE<35 )) || \
-               (( TARGET==2 && CHANCE<45 )) || \
-               (( TARGET==5 && CHANCE<70 )); then
-            SHOULD_UPDATE="yes"
-          else
-            SHOULD_UPDATE="no"
-          fi
-          if [[ "$SHOULD_UPDATE" != "yes" && "$NEW_DAY" == "no" ]]; then
-            echo "NothingToDo=true" >> $GITHUB_OUTPUT
-            exit 0
+          if (( CHANCE >= BASE )) && [[ "$NEW_DAY" == "no" ]]; then
+            echo "NothingToDo=true" >> $GITHUB_OUTPUT; exit 0
           fi
 
-          # Видимый сниппет
-          topics=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema" "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
+          topics=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema"
+                  "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
           pick=${topics[$RANDOM % ${#topics[@]}]}
           SNIPPET="Last update: **$TS** · Focus today: *$pick*."
 
-          # Вставка сниппета
+          # Вставка видимого сниппета
           awk -v repl="$SNIPPET" '
             BEGIN{inblk=0}
             /<!-- ACTIVITY:START -->/ {print; print repl; inblk=1; next}
@@ -101,7 +97,6 @@ jobs:
 
           echo "NothingToDo=false" >> $GITHUB_OUTPUT
 
-      # NEW: перед пушем ребейзим на удалённую ветку
       - name: Rebase onto remote
         if: steps.run.outputs.NothingToDo == 'false'
         run: |
@@ -118,5 +113,4 @@ jobs:
           commit_user_name: "github-actions[bot]"
           commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
           file_pattern: README.md
-          # NEW: на случай гонок — безопасный форс-пуш
           push_options: '--force-with-lease'
