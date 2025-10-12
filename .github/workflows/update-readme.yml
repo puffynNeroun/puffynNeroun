@@ -157,7 +157,7 @@ jobs:
 
       - name: Commit changes
         if: steps.run.outputs.NothingToDo == 'false'
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(readme): auto refresh"
           file_pattern: README.md
