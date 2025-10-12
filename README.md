@@ -27,7 +27,6 @@ Focused on performance, clean architecture, and automation.
 ---
 
 ### 📊 GitHub Stats
-![Aleksandr's GitHub stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_title=true&count_private=true&hide_border=true)
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=puffynNeroun&layout=compact&theme=github_dark&hide_border=true)
 
 ---
