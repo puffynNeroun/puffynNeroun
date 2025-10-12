@@ -175,7 +175,10 @@ EOF
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore(readme): auto refresh"
-          commit_user_name: "github-actions[bot]"
-          commit_user_email: "41898282+github-actions[bot]@users.noreply.github.com"
           file_pattern: README.md
+          commit_user_name: "Aleksandr Teslia"
+          commit_user_email: "130913559+puffynNeroun@users.noreply.github.com"
+          commit_author_name: "Aleksandr Teslia"
+          commit_author_email: "130913559+puffynNeroun@users.noreply.github.com"
           push_options: '--force-with-lease'
+
