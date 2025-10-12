@@ -1,8 +1,8 @@
-name: Update README (variable 5–20 per day)
+name: Update README (variable 5-20 per day)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"   # каждые 15 минут
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -21,13 +21,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Определяем основную ветку (main/master) динамически
       - name: Detect default branch
         id: def
         shell: bash
         run: |
           set -euo pipefail
-          DEF=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' || true)
+          DEF="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' || true)"
           echo "branch=${DEF:-master}" >> "$GITHUB_OUTPUT"
 
       - name: Decide and update
@@ -36,27 +35,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          # --- Глобальные данные времени ---
           TODAY="$(date -u +%Y-%m-%d)"
           TS="$(date -u +"%Y-%m-%d %H:%M UTC")"
-          HOUR=$(date -u +%H)     # 00..23
-          DOW=$(date -u +%u)      # 1..7 (понедельник..воскресенье)
+          HOUR=$(date -u +%H)
+          DOW=$(date -u +%u)
 
-          # --- Fail-safe: наличие README ---
           if [[ ! -f README.md ]]; then
             echo "README.md missing — nothing to do."
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # --- Дневное окно активности (реалистичнее) ---
           if (( HOUR < 5 || HOUR > 22 )); then
             echo "Night hours — skip."
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # --- Минимальный интервал между апдейтами (10 минут) ---
           LAST_TS=$(git log -1 --pretty=%ct -- README.md 2>/dev/null || echo 0)
           NOW_TS=$(date -u +%s)
           if (( NOW_TS - LAST_TS < 600 )); then
@@ -65,7 +60,6 @@ jobs:
             exit 0
           fi
 
-          # --- Инициализация блока состояния, если его нет ---
           if ! grep -q "<!-- ACTIVITY:STATE" README.md; then
             cat >> README.md <<'EOF'
 
@@ -81,7 +75,6 @@ ACTIVITY:STATE -->
 EOF
           fi
 
-          # --- Чтение состояния ---
           START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
           END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
 
@@ -93,15 +86,13 @@ EOF
           COUNT=${COUNT:-0}
           TARGET=${TARGET:-0}
 
-          # --- Новый день → цель 5–20 с перекосом к 6–12; на выходных чуть меньше ---
           if [[ "$DATE" != "$TODAY" ]]; then
             R=$((RANDOM%100))
-            if   (( R < 35 )); then TARGET=$((5  + RANDOM%4))   # 5–8
-            elif (( R < 70 )); then TARGET=$((9  + RANDOM%4))   # 9–12
-            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))   # 13–16
-            else                   TARGET=$((17 + RANDOM%4))   # 17–20
+            if   (( R < 35 )); then TARGET=$((5  + RANDOM%4))
+            elif (( R < 70 )); then TARGET=$((9  + RANDOM%4))
+            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))
+            else                   TARGET=$((17 + RANDOM%4))
             fi
-            # Выходные (суббота=6, воскресенье=7) — уменьшаем цель на 2–4
             if (( DOW == 6 || DOW == 7 )); then
               TARGET=$(( TARGET - (2 + RANDOM%3) ))
             fi
@@ -113,18 +104,15 @@ EOF
             NEW_DAY="no"
           fi
 
-          # --- Уже достигли цели ---
           if (( COUNT >= TARGET )); then
             echo "Daily target reached ($COUNT/$TARGET)."
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # --- Вероятность апдейта: растягиваем по дню, финишный спринт вечером ---
           GAP=$((TARGET-COUNT))
-          BASE=$(( 30 + GAP*5 ))   # базовая вероятность: 30% + 5% за каждый недостающий апдейт
+          BASE=$(( 30 + GAP*5 ))
           (( BASE > 85 )) && BASE=85
-          # Если уже поздний вечер и отставание ощутимое — подталкиваем
           if (( HOUR >= 21 && GAP > 2 )); then BASE=$((BASE+20)); fi
           (( BASE > 90 )) && BASE=90
 
@@ -135,14 +123,12 @@ EOF
             exit 0
           fi
 
-          # --- Текстовые варианты, чтобы лента не была однотипной ---
           prefixes=("Last update" "Daily checkpoint" "Routine sync" "Status ping" "Heartbeat" "Activity tick")
           focus=("RSC patterns" "Server Actions" "TanStack Query v5" "Prisma schema" "Playwright e2e" "Core Web Vitals" "CI/CD" "NextAuth/SSO" "Redis caching")
           pref=${prefixes[$RANDOM % ${#prefixes[@]}]}
           pick=${focus[$RANDOM % ${#focus[@]}]}
           SNIPPET="${pref}: **${TS}** · Focus today: *${pick}*."
 
-          # --- Вставка видимой строки между START/END ---
           awk -v repl="$SNIPPET" '
             BEGIN{inblk=0}
             /<!-- ACTIVITY:START -->/ {print; print repl; inblk=1; next}
@@ -150,7 +136,6 @@ EOF
             !inblk {print}
           ' README.md > README.tmp && mv README.tmp README.md
 
-          # --- Обновление STATE ---
           COUNT=$((COUNT+1))
           awk -v date="$DATE" -v count="$COUNT" -v target="$TARGET" '
             BEGIN{inblk=0}
@@ -181,4 +166,3 @@ EOF
           commit_author_name: "Aleksandr Teslia"
           commit_author_email: "130913559+puffynNeroun@users.noreply.github.com"
           push_options: '--force-with-lease'
-
