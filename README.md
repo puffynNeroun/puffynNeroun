@@ -41,15 +41,15 @@ Focused on **performance, clean architecture, DX, and automation.**
 ---
 
 ### 📈 GitHub Insights
+
+![Aleksandr's GitHub stats](https://github-readme-stats.vercel.app/api?username=puffynNeroun&show_icons=true&theme=github_dark&hide_title=true&count_private=true&hide_border=true)
+
 <p align="center">
   <!-- streak (стабильный виджет) -->
   <img height="165" src="https://github-readme-streak-stats.herokuapp.com?user=puffynNeroun&theme=github-dark&hide_border=true&ring=5BCDEC&fire=5BCDEC&currStreakLabel=5BCDEC" />
 </p>
 
-<!-- Activity graph (живой график активности) -->
-<p align="center">
-  <img src="https://github-readme-activity-graph.vercel.app/graph?username=puffynNeroun&theme=github-dark&hide_border=true&bg_color=0D1117&color=5BCDEC&line=5BCDEC&point=5BCDEC&custom_title=Contribution%20Graph" width="100%"/>
-</p>
+
 
 ---
 
