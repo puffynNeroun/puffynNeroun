@@ -42,11 +42,6 @@ Focused on **performance, clean architecture, DX, and automation.**
 
 ### 📈 GitHub Insights
 
-<p align="center">
-  <img src="./github-metrics.svg" alt="GitHub metrics" />
-</p>
-
-
 
 <p align="center">
   <!-- streak (стабильный виджет) -->
