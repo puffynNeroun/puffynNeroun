@@ -154,6 +154,22 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin ${{ steps.def.outputs.branch }}
           git rebase origin/${{ steps.def.outputs.branch }} || git reset --hard origin/${{ steps.def.outputs.branch }}
+          
+      - name: Bust cache for dynamic images
+        if: steps.run.outputs.NothingToDo == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          TS=$(date -u +%s)
+
+          # streak
+          sed -i -E "s#(github-readme-streak-stats\.herokuapp\.com[^\"')]+)(\?_=[0-9]+)?#\1?_=${TS}#g" README.md
+          # trophies
+          sed -i -E "s#(github-profile-trophy\.vercel\.app[^\"')]+)(\?_=[0-9]+)?#\1?_=${TS}#g" README.md
+          # shields (followers, stars)
+          sed -i -E "s#(img\.shields\.io/github/(followers|stars)/[^\"')]+)(\?_=[0-9]+)?#\1?_=${TS}#g" README.md
+          # komarev (views)
+          sed -i -E "s#(komarev\.com/ghpvc/[^\"')]+)(\?_=[0-9]+)?#\1?_=${TS}#g" README.md
 
       - name: Commit changes
         if: steps.run.outputs.NothingToDo == 'false'
