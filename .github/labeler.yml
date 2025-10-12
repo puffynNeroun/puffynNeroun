@@ -1,36 +1,28 @@
-# Маппинг: <название-лейбла> -> массив правил
+# .github/labeler.yml  — простой и совместимый формат
 feature:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'src/**'
-          - 'app/**'
-          - 'packages/**'
+  - 'src/**'
+  - 'app/**'
+  - 'packages/**'
+
 fix:
-  - changed-files:
-      - any-glob-to-any-file:
-          - '**/*.ts'
-          - '**/*.tsx'
-          - '**/*.js'
-          - 'src/**'
+  - '**/*.ts'
+  - '**/*.tsx'
+  - '**/*.js'
+  - 'src/**'
+
 docs:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'README.md'
-          - 'docs/**'
+  - 'README.md'
+  - 'docs/**'
+
 chore:
-  - changed-files:
-      - any-glob-to-any-file:
-          - '.github/**'
-          - '**/*.yml'
-          - '**/*.yaml'
+  - '.github/**'
+  - '**/*.yml'
+  - '**/*.yaml'
 
 deps:
-  - changed-files:
-      - any-glob-to-any-file:
-          - 'package.json'
-          - 'pnpm-lock.yaml'
-          - 'yarn.lock'
+  - 'package.json'
+  - 'pnpm-lock.yaml'
+  - 'yarn.lock'
+
 actions:
-  - changed-files:
-      - any-glob-to-any-file:
-          - '.github/workflows/**'
+  - '.github/workflows/**'
