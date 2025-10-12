@@ -1,0 +1,26 @@
+# Автоматические метки по путям и файлам
+
+feature:
+  - "src/**"
+  - "components/**"
+  - "pages/**"
+
+bug:
+  - "fix/**"
+  - "hotfix/**"
+
+chore:
+  - ".github/**"
+  - "scripts/**"
+  - "docs/**"
+  - "README.md"
+
+deps:
+  - "package.json"
+  - "yarn.lock"
+  - "pnpm-lock.yaml"
+  - "package-lock.json"
+
+refactor:
+  - "lib/**"
+  - "utils/**"
