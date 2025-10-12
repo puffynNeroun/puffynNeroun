@@ -2,7 +2,7 @@ name: Update README (variable 5-20 per day)
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/15 * * * *" # каждые 15 минут
   workflow_dispatch:
 
 permissions:
@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          DEF="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' || true)"
+          DEF=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' || true)
           echo "branch=${DEF:-master}" >> "$GITHUB_OUTPUT"
 
       - name: Decide and update
@@ -41,13 +41,13 @@ jobs:
           DOW=$(date -u +%u)
 
           if [[ ! -f README.md ]]; then
-            echo "README.md missing — nothing to do."
+            echo "README.md missing — skip"
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           if (( HOUR < 5 || HOUR > 22 )); then
-            echo "Night hours — skip."
+            echo "Night window — skip"
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -55,7 +55,7 @@ jobs:
           LAST_TS=$(git log -1 --pretty=%ct -- README.md 2>/dev/null || echo 0)
           NOW_TS=$(date -u +%s)
           if (( NOW_TS - LAST_TS < 600 )); then
-            echo "Updated <10 min ago — skip."
+            echo "Updated <10 min ago — skip"
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -77,21 +77,20 @@ EOF
 
           START_LINE=$(grep -n "<!-- ACTIVITY:STATE" README.md | cut -d: -f1)
           END_LINE=$(grep -n "ACTIVITY:STATE -->" README.md | cut -d: -f1)
-
           STATE=$(sed -n "$((START_LINE+1)),$((END_LINE-1))p" README.md)
+
           DATE=$(echo "$STATE"  | grep '^DATE='   | cut -d= -f2- || true)
           COUNT=$(echo "$STATE" | grep '^COUNT='  | cut -d= -f2- || true)
           TARGET=$(echo "$STATE"| grep '^TARGET=' | cut -d= -f2- || true)
-
           COUNT=${COUNT:-0}
           TARGET=${TARGET:-0}
 
           if [[ "$DATE" != "$TODAY" ]]; then
             R=$((RANDOM%100))
-            if   (( R < 35 )); then TARGET=$((5  + RANDOM%4))
-            elif (( R < 70 )); then TARGET=$((9  + RANDOM%4))
-            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))
-            else                   TARGET=$((17 + RANDOM%4))
+            if   (( R < 35 )); then TARGET=$((5  + RANDOM%4))   # 5–8
+            elif (( R < 70 )); then TARGET=$((9  + RANDOM%4))   # 9–12
+            elif (( R < 90 )); then TARGET=$((13 + RANDOM%4))   # 13–16
+            else                   TARGET=$((17 + RANDOM%4))    # 17–20
             fi
             if (( DOW == 6 || DOW == 7 )); then
               TARGET=$(( TARGET - (2 + RANDOM%3) ))
@@ -105,20 +104,20 @@ EOF
           fi
 
           if (( COUNT >= TARGET )); then
-            echo "Daily target reached ($COUNT/$TARGET)."
+            echo "Target reached ($COUNT/$TARGET)"
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           GAP=$((TARGET-COUNT))
-          BASE=$(( 30 + GAP*5 ))
+          BASE=$((30 + GAP*5))
           (( BASE > 85 )) && BASE=85
           if (( HOUR >= 21 && GAP > 2 )); then BASE=$((BASE+20)); fi
           (( BASE > 90 )) && BASE=90
 
           CHANCE=$((RANDOM%100))
           if (( CHANCE >= BASE )) && [[ "$NEW_DAY" == "no" ]]; then
-            echo "Random gate closed (chance=${CHANCE}>=${BASE}) — skip."
+            echo "Random gate ($CHANCE >= $BASE) — skip"
             echo "NothingToDo=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
